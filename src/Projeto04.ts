@@ -20,7 +20,7 @@ interface Manufacturer {
   code: number
   brand: string
   website: string
-  phone: string
+  phone: number
   uf: UF
 }
 
@@ -35,6 +35,15 @@ const rl = readline.createInterface({
   output: process.stdout,
 })
 
+const ANSII_RED = '\x1b[31m%s\x1b[0m'
+const ANSII_GREEN = '\x1b[32m%s\x1b[0m'
+
+const products: Product[] = []
+const manufacturers: Manufacturer[] = []
+const ufs: UF[] = []
+const customers: Customer[] = []
+const seniorCustomers: Customer[] = []
+
 async function printLine(prompt: string | number): Promise<string> {
   return new Promise((resolve) => {
     rl.question(prompt.toString(), (input) => {
@@ -43,110 +52,248 @@ async function printLine(prompt: string | number): Promise<string> {
   })
 }
 
-const products: Product[] = []
-const manufacturers: Manufacturer[] = []
-const ufs: UF[] = []
-const customers: Customer[] = []
-const seniorCustomers: Customer[] = []
+async function validaNum(input: string | number, inputName: string) {
+  while (isNaN(Number(input))) {
+    console.log(ANSII_RED, '------------------------------')
+    console.log(ANSII_RED, '| ACEITAMOS APENAS NUMEROS ⚠️ |')
+    console.log(ANSII_RED, '------------------------------')
+    input = parseFloat(await printLine(`Informe ${inputName} novamente :`))
+  }
+  return Number(input)
+}
+async function validaStr(input: string | number, inputName: string) {
+  const onlyLetters = /^[A-Za-z]+$/
+
+  while (!onlyLetters.test(String(input))) {
+    console.log(ANSII_RED, '------------------------------')
+    console.log(ANSII_RED, '| ACEITAMOS APENAS STRINGS ⚠️ |')
+    console.log(ANSII_RED, '------------------------------')
+    input = await printLine(`Informe ${inputName} novamente :`)
+  }
+  return String(input)
+}
 
 async function registerProduct(): Promise<void> {
   if (manufacturers.length === 0) {
-    console.log('Primeiro registre uma fabrica para poder registrar um produto')
+    console.log(
+      ANSII_RED,
+      '--------------------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '| Primeiro registre uma fabrica 🏛️ para poder registrar um produto |',
+    )
+    console.log(
+      ANSII_RED,
+      '--------------------------------------------------------------------',
+    )
     return
   } else if (manufacturers.length < 2) {
     console.log(
-      'Voce necessita de no minimo 2 fabricantes cadastrados para poder registar um produto',
+      ANSII_RED,
+      '----------------------------------------------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '| Voce necessita de no minimo [02] fabricantes cadastrados para poder registar um produto ❌ |',
+    )
+    console.log(
+      ANSII_RED,
+      '----------------------------------------------------------------------------------------------',
     )
     return
   }
   const product: Product = {} as Product
-  product.description = await printLine('Enter the product description:')
-  product.weight = parseFloat(await printLine('Enter the product weight:'))
-  product.purchaseValue = parseFloat(
-    await printLine('Enter the product purchase value:'),
-  )
-  product.saleValue = parseFloat(
-    await printLine('Enter the product sale value:'),
+  product.description = await validaStr(
+    await printLine('Insira a Descricao do produto 📋 : '),
+    'a descricao',
   )
 
+  product.weight = await validaNum(
+    parseFloat(await printLine('Informe o peso do produto 🏋️ :')),
+    'o peso',
+  )
+
+  product.purchaseValue = await validaNum(
+    parseFloat(await printLine('Insira o valor de [COMPRA] do produto 🛒:')),
+    'o valor de compra',
+  )
+
+  product.saleValue = await validaNum(
+    parseFloat(await printLine('Insira o valor de [VENDA] do produto 🎫:')),
+    'o valor de venda',
+  )
+
+  // CALCULO PARA PROFIT
   product.profit = product.saleValue - product.purchaseValue
   product.profitPercentage = (product.profit / product.purchaseValue) * 100
 
-  const manufacturerCode = parseInt(
-    await printLine('Enter the manufacturer code for the product:'),
+  const manufacturerCode = await validaNum(
+    parseInt(await printLine('Insira o codigo da fabrica do produto :')),
+    'o codigo da fabrica',
   )
 
   const manufacturer = manufacturers.find((m) => m.code === manufacturerCode)
-  if (manufacturer) {
-    product.manufacturerId = manufacturer.code
-    products.push(product)
-    console.log('Product registered successfully!')
-  } else {
+  if (!manufacturer) {
     console.log(
-      'Manufacturer not found. Register the manufacturer before registering the product.',
+      ANSII_RED,
+      '---------------------------------------------------------',
     )
+    console.log(
+      ANSII_RED,
+      '| Fabrica NAO ENCONTRADA, VERIFIQUE O CODIGO FORNECIDO! |',
+    )
+    console.log(
+      ANSII_RED,
+      '---------------------------------------------------------',
+    )
+    return
   }
+  product.manufacturerId = manufacturer.code
+  products.push(product)
+  console.log(ANSII_GREEN, '---------------------------------------')
+  console.log(ANSII_GREEN, '| Produto registrado com sucesso ✅ ! |')
+  console.log(ANSII_GREEN, '---------------------------------------')
 }
 
 async function registerManufacturer(): Promise<void> {
   if (ufs.length === 0) {
-    console.log('Primeiro voce precisa cadastrar uma UF antes de prosseguir 😀')
+    console.log(
+      ANSII_RED,
+      '------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '| Voce deve cadastrar uma UF antes de prosseguir 🗺️! |',
+    )
+    console.log(
+      ANSII_RED,
+      '------------------------------------------------------',
+    )
     return
   }
   if (manufacturers.length >= 5) {
-    console.log('Maximum number of manufacturers reached.')
+    console.log(
+      ANSII_RED,
+      '----------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '| ❌ Numero MAXIMO de Fabricas Ja cadastradas ❌! |',
+    )
+    console.log(
+      ANSII_RED,
+      '----------------------------------------------------',
+    )
     return
   }
 
   const manufacturer: Manufacturer = {} as Manufacturer
-  manufacturer.code = parseInt(await printLine('Enter the manufacturer code:'))
-  manufacturer.brand = await printLine('Enter the manufacturer brand:')
-  manufacturer.website = await printLine('Enter the manufacturer website:')
-  manufacturer.phone = await printLine('Enter the manufacturer phone number:')
+  manufacturer.code = await validaNum(
+    parseInt(await printLine('Insira o codigo - [ID] da Fabrica 🏛️ : ')),
+    'o codigo da fabrica',
+  )
+  manufacturer.brand = await validaStr(
+    await printLine('Insira a logo - [Nome] da fabrica :'),
+    'o nome',
+  )
+  manufacturer.website = await validaStr(
+    await printLine('Insira o Site da fabrica 🌎:'),
+    'o site',
+  )
+  manufacturer.phone = await validaNum(
+    await printLine('Insira o numero de telefone da Fabrica 📱:'),
+    'o numero',
+  )
 
-  const ufAbbreviation = await printLine(
-    'Enter the UF abbreviation for the manufacturer:',
+  const ufAbbreviation = await validaStr(
+    await printLine('Insira em qual UF a fabrica se localiza 🗺️:'),
+    'qual a UF',
   )
   const uf = ufs.find((u) => u.abbreviation === ufAbbreviation)
-  if (uf) {
-    manufacturer.uf = uf
-    manufacturers.push(manufacturer)
-    console.log('Manufacturer registered successfully!')
-  } else {
+  if (!uf) {
     console.log(
-      'UF not found. Register the UF before registering the manufacturer.',
+      ANSII_RED,
+      '------------------------------------------------------',
     )
+    console.log(
+      ANSII_RED,
+      '| Voce deve cadastrar uma UF antes de prosseguir 🗺️! |',
+    )
+    console.log(
+      ANSII_RED,
+      '------------------------------------------------------',
+    )
+    return
   }
+  manufacturer.uf = uf
+  manufacturers.push(manufacturer)
+  console.log(ANSII_GREEN, '---------------------------------------')
+  console.log(ANSII_GREEN, '| Fabrica registrada com sucesso ✅ ! |')
+  console.log(ANSII_GREEN, '---------------------------------------')
 }
 
 async function registerUF(): Promise<void> {
   const uf: UF = {} as UF
-  uf.abbreviation = await printLine('Enter the UF abbreviation:')
-  uf.name = await printLine('Enter the UF name:')
+  uf.abbreviation = await validaStr(
+    await printLine('Insira a abreviacao da UF :'),
+    'a UF',
+  )
+  uf.name = await validaStr(
+    await printLine('Insira a abreviacao da UF :'),
+    'o nome da UF',
+  )
   ufs.push(uf)
-  console.log('UF registered successfully!')
+  console.log(ANSII_GREEN, '---------------------------------------')
+  console.log(ANSII_GREEN, '|   UF registrada com sucesso ✅ !    |')
+  console.log(ANSII_GREEN, '---------------------------------------')
 }
 
 async function registerCustomer(): Promise<void> {
   if (customers.length >= 30) {
-    console.log('Maximum number of customers reached.')
+    console.log(
+      ANSII_RED,
+      '------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '|  Numero MAXIMO de Clientes cadastrados Atingido!  |',
+    )
+    console.log(
+      ANSII_RED,
+      '------------------------------------------------------',
+    )
     return
   }
-  const id = await printLine('Enter the customer ID: ')
-  const name = await printLine('Enter the customer name: ')
-  const age = await printLine('Enter the customer age: ')
+  const id = await validaNum(
+    await printLine('Informe o ID do cliente: '),
+    'o id',
+  )
+  const name = await validaStr(
+    await printLine('Informe o nome do cliente: '),
+    'o nome',
+  )
+  const age = await validaNum(
+    await printLine('Informe a Idade do cliente 🔞: '),
+    'a idade',
+  )
 
   const customer: Customer = {
-    id: Number(id),
+    id,
     name,
-    age: Number(age),
+    age,
   }
   customers.push(customer)
-  console.log('Customer registered successfully!')
+  console.log(ANSII_GREEN, '--------------------------------------------')
+  console.log(ANSII_GREEN, '|   Cliente registrado com sucesso ✅ !    |')
+  console.log(ANSII_GREEN, '--------------------------------------------')
 }
 
 async function listProductsByManufacturer() {
-  const manufacturerCode = await printLine('Enter the manufacturer code: ')
+  const manufacturerCode = validaNum(
+    await printLine('Insira o codigo da Fabrica: '),
+    'o codigo da fabrica',
+  )
 
   const filteredProducts = products.filter(
     (product) => product.manufacturerId === Number(manufacturerCode),
@@ -156,7 +303,9 @@ async function listProductsByManufacturer() {
     a.name.localeCompare(b.name),
   )
 
-  console.log(sortedProducts)
+  console.log(ANSII_GREEN, '--------------------------------------------')
+  console.log(`${sortedProducts}`)
+  console.log(ANSII_GREEN, '--------------------------------------------')
 }
 
 async function findStatesWithHighestValueProduct() {
