@@ -77,7 +77,7 @@ async function registerProduct(): Promise<void> {
   if (manufacturers.length === 0) {
     console.log(
       ANSII_RED,
-      '--------------------------------------------------------------------',
+      '\n--------------------------------------------------------------------',
     )
     console.log(
       ANSII_RED,
@@ -91,7 +91,7 @@ async function registerProduct(): Promise<void> {
   } else if (manufacturers.length < 2) {
     console.log(
       ANSII_RED,
-      '----------------------------------------------------------------------------------------------',
+      '\n----------------------------------------------------------------------------------------------',
     )
     console.log(
       ANSII_RED,
@@ -104,6 +104,11 @@ async function registerProduct(): Promise<void> {
     return
   }
   const product: Product = {} as Product
+  product.name = await validaStr(
+    await printLine('Insira o nome do produto 📋 : '),
+    'o nome',
+  )
+
   product.description = await validaStr(
     await printLine('Insira a Descricao do produto 📋 : '),
     'a descricao',
@@ -137,7 +142,7 @@ async function registerProduct(): Promise<void> {
   if (!manufacturer) {
     console.log(
       ANSII_RED,
-      '---------------------------------------------------------',
+      '\n---------------------------------------------------------',
     )
     console.log(
       ANSII_RED,
@@ -151,9 +156,39 @@ async function registerProduct(): Promise<void> {
   }
   product.manufacturerId = manufacturer.code
   products.push(product)
-  console.log(ANSII_GREEN, '---------------------------------------')
+  console.log(ANSII_GREEN, '\n---------------------------------------')
   console.log(ANSII_GREEN, '| Produto registrado com sucesso ✅ ! |')
   console.log(ANSII_GREEN, '---------------------------------------')
+}
+
+function listProducts(): void {
+  if (products.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de produtos Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+  } else {
+    console.log(ANSII_GREEN, '\n---------------------------------------')
+    console.log(ANSII_GREEN, '|    Listando Todos Produtos...       |')
+    console.log(ANSII_GREEN, '---------------------------------------')
+    products.forEach((product) => {
+      console.log(`\n| Nome            | ${product.name}`)
+      console.log('---------------------------------------')
+      console.log(`| Descricao       | ${product.description}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| FabricaId       | ${product.manufacturerId}`)
+      console.log('---------------------------------------')
+      console.log(`| Profit          | ${product.profit}`)
+      console.log('---------------------------------------')
+      console.log(`| Profit em %     | ${product.profitPercentage.toFixed(2)}`)
+      console.log('---------------------------------------')
+      console.log(`| Valor de Compra | ${product.purchaseValue}`)
+      console.log('---------------------------------------')
+      console.log(`| Valor de Venda  | ${product.saleValue}`)
+      console.log('---------------------------------------')
+      console.log(`| Peso            | ${product.weight}`)
+      console.log('---------------------------------------')
+    })
+  }
 }
 
 async function registerManufacturer(): Promise<void> {
@@ -218,7 +253,7 @@ async function registerManufacturer(): Promise<void> {
     )
     console.log(
       ANSII_RED,
-      '| Voce deve cadastrar uma UF antes de prosseguir 🗺️! |',
+      '| UF nao encontrada, certifique-se que esta digitando uma UF valida! |',
     )
     console.log(
       ANSII_RED,
@@ -233,6 +268,29 @@ async function registerManufacturer(): Promise<void> {
   console.log(ANSII_GREEN, '---------------------------------------')
 }
 
+function listManufacturers(): void {
+  if (manufacturers.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de Fabricas Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+  } else {
+    console.log(ANSII_GREEN, '\n---------------------------------------')
+    console.log(ANSII_GREEN, '|    Listando Todas as fabricas...    |')
+    console.log(ANSII_GREEN, '---------------------------------------')
+    manufacturers.forEach((manufacturer) => {
+      console.log(`\n| Marca/Logo      | ${manufacturer.brand}`)
+      console.log('---------------------------------------')
+      console.log(`| Telefone        | ${manufacturer.phone}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| FabricaId       | ${manufacturer.code}`)
+      console.log('---------------------------------------')
+      console.log(`| UF              | ${manufacturer.uf.abbreviation}`)
+      console.log('---------------------------------------')
+      console.log(`| Website         | ${manufacturer.website}`)
+      console.log('---------------------------------------')
+    })
+  }
+}
 async function registerUF(): Promise<void> {
   const uf: UF = {} as UF
   uf.abbreviation = await validaStr(
@@ -240,20 +298,38 @@ async function registerUF(): Promise<void> {
     'a UF',
   )
   uf.name = await validaStr(
-    await printLine('Insira a abreviacao da UF :'),
+    await printLine('Insira o nome da UF :'),
     'o nome da UF',
   )
   ufs.push(uf)
-  console.log(ANSII_GREEN, '---------------------------------------')
+  console.log(ANSII_GREEN, '\n---------------------------------------')
   console.log(ANSII_GREEN, '|   UF registrada com sucesso ✅ !    |')
   console.log(ANSII_GREEN, '---------------------------------------')
+}
+
+function listUfs(): void {
+  if (ufs.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|       Lista de UFS Vazia  !         |')
+    console.log(ANSII_RED, '---------------------------------------')
+  } else {
+    console.log(ANSII_GREEN, '\n---------------------------------------')
+    console.log(ANSII_GREEN, '|    Listando Todas as UFS...         |')
+    console.log(ANSII_GREEN, '---------------------------------------')
+    ufs.forEach((uf) => {
+      console.log(`\n| Nome            | ${uf.name}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| Sigla           | ${uf.abbreviation}`)
+      console.log('---------------------------------------')
+    })
+  }
 }
 
 async function registerCustomer(): Promise<void> {
   if (customers.length >= 30) {
     console.log(
       ANSII_RED,
-      '------------------------------------------------------',
+      '\n------------------------------------------------------',
     )
     console.log(
       ANSII_RED,
@@ -284,9 +360,47 @@ async function registerCustomer(): Promise<void> {
     age,
   }
   customers.push(customer)
-  console.log(ANSII_GREEN, '--------------------------------------------')
+  console.log(ANSII_GREEN, '\n--------------------------------------------')
   console.log(ANSII_GREEN, '|   Cliente registrado com sucesso ✅ !    |')
   console.log(ANSII_GREEN, '--------------------------------------------')
+}
+function listSeniorCustomers() {
+  if (seniorCustomers.length === 0) {
+    console.log(ANSII_RED, '\n--------------------------------------------')
+    console.log(ANSII_RED, '|       Nao ha clientes cadastrados        |')
+    console.log(ANSII_RED, '--------------------------------------------')
+  } else {
+    console.log(ANSII_GREEN, '\n---------------------------------------')
+    console.log(ANSII_GREEN, '|    Listando Todos os clientes...    |')
+    console.log(ANSII_GREEN, '---------------------------------------')
+    seniorCustomers.forEach((customer) => {
+      console.log(`\n| Nome            | ${customer.name}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| Id              | ${customer.id}`)
+      console.log('---------------------------------------')
+      console.log(`| Idade           | ${customer.age}`)
+      console.log('---------------------------------------')
+    })
+  }
+}
+function listCustomers() {
+  if (customers.length === 0) {
+    console.log(ANSII_RED, '\n--------------------------------------------')
+    console.log(ANSII_RED, '|       Nao ha clientes cadastrados        |')
+    console.log(ANSII_RED, '--------------------------------------------')
+  } else {
+    console.log(ANSII_GREEN, '\n---------------------------------------')
+    console.log(ANSII_GREEN, '|    Listando Todos os clientes...    |')
+    console.log(ANSII_GREEN, '---------------------------------------')
+    customers.forEach((customer) => {
+      console.log(`\n| Nome            | ${customer.name}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| Id              | ${customer.id}`)
+      console.log('---------------------------------------')
+      console.log(`| Idade           | ${customer.age}`)
+      console.log('---------------------------------------')
+    })
+  }
 }
 
 async function listProductsByManufacturer() {
@@ -302,13 +416,51 @@ async function listProductsByManufacturer() {
   const sortedProducts = filteredProducts.sort((a, b) =>
     a.name.localeCompare(b.name),
   )
-
-  console.log(ANSII_GREEN, '--------------------------------------------')
-  console.log(`${sortedProducts}`)
-  console.log(ANSII_GREEN, '--------------------------------------------')
+  if (!sortedProducts) {
+    console.log(
+      ANSII_RED,
+      '\n---------------------------------------------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '|   Nao encontramos nenhum produto cadastrado nessa fabrica, verifique o codigo fornecido   |',
+    )
+    console.log(
+      ANSII_RED,
+      '---------------------------------------------------------------------------------------------',
+    )
+  } else {
+    sortedProducts.forEach((product) => {
+      console.log(ANSII_GREEN, '\n---------------------------------------')
+      console.log(ANSII_GREEN, '|        Produto Encontrado!!         |')
+      console.log(ANSII_GREEN, '---------------------------------------')
+      console.log(`\n| Nome            | ${product.name}`)
+      console.log('---------------------------------------')
+      console.log(`| Descricao       | ${product.description}`)
+      console.log('---------------------------------------')
+      console.log(ANSII_RED, `| FabricaId       | ${product.manufacturerId}`)
+      console.log('---------------------------------------')
+      console.log(`| Profit          | ${product.profit}`)
+      console.log('---------------------------------------')
+      console.log(`| Profit em %     | ${product.profitPercentage}`)
+      console.log('---------------------------------------')
+      console.log(`| Valor de Compra | ${product.purchaseValue}`)
+      console.log('---------------------------------------')
+      console.log(`| Valor de Venda  | ${product.saleValue}`)
+      console.log('---------------------------------------')
+      console.log(`| Peso       | ${product.weight}`)
+      console.log('---------------------------------------')
+    })
+  }
 }
 
 async function findStatesWithHighestValueProduct() {
+  if (products.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de produtos Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+    return
+  }
   const highestPrice = Math.max(...products.map((product) => product.saleValue))
   const stateSet = new Set<string>()
 
@@ -329,11 +481,18 @@ async function findStatesWithHighestValueProduct() {
       }
     }
   })
-
-  console.log([...stateSet])
+  console.log('\n---------------------------------------')
+  console.log('Estados com maior preco ', [...stateSet])
+  console.log('---------------------------------------')
 }
 
 async function findManufacturersWithLowestValueProduct() {
+  if (products.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de produtos Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+    return
+  }
   const lowestPrice = Math.min(...products.map((product) => product.saleValue))
   const manufacturerSet = new Set<string>()
 
@@ -353,6 +512,12 @@ async function findManufacturersWithLowestValueProduct() {
 }
 
 async function listProductsInAscendingOrderOfValue() {
+  if (products.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de produtos Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+    return
+  }
   const sortedProducts = products
     .slice()
     .sort((a, b) => a.saleValue - b.saleValue)
@@ -361,6 +526,12 @@ async function listProductsInAscendingOrderOfValue() {
 }
 
 async function listProductsInAscendingOrderOfProfit() {
+  if (products.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de produtos Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+    return
+  }
   const sortedProducts = products
     .slice()
     .sort(
@@ -371,32 +542,74 @@ async function listProductsInAscendingOrderOfProfit() {
 }
 
 async function checkSeniorCustomers() {
+  if (customers.length === 0) {
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de clientes Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
+    return
+  }
   const seniorCustomersAbove60 = customers.filter(
     (customer) => customer.age > 60,
   )
 
-  if (seniorCustomersAbove60.length > 3) {
+  if (seniorCustomersAbove60.length >= 3) {
     seniorCustomersAbove60.forEach((customer) => {
       const index = customers.indexOf(customer)
 
       if (index !== -1) {
         customers.splice(index, 1)
         seniorCustomers.push(customer)
+        console.log(
+          ANSII_GREEN,
+          '\n--------------------------------------------',
+        )
+        console.log(ANSII_GREEN, '|   Cliente Encontrado com sucesso ✅ !    |')
+        console.log(
+          ANSII_GREEN,
+          '--------------------------------------------\n',
+        )
+        console.log(`| Nome            | ${customer.name}`)
+        console.log('---------------------------------------')
+        console.log(ANSII_RED, `| Id              | ${customer.id}`)
+        console.log('---------------------------------------')
+        console.log(`| Idade           | ${customer.age}`)
+        console.log('---------------------------------------')
       }
     })
 
     console.log(
-      'Customers removed from the original list and added to the senior customers list.',
+      ANSII_GREEN,
+      '\n---------------------------------------------------------------------------------------------',
+    )
+    console.log(
+      ANSII_GREEN,
+      '|   Cliente removido da lista original e adicionado a lista de senior com sucesso ✅ !    |',
+    )
+    console.log(
+      ANSII_GREEN,
+      '---------------------------------------------------------------------------------------------',
     )
   } else {
     console.log(
-      'There are not enough customers above 60 years old in the list.',
+      ANSII_RED,
+      '\n---------------------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '|  Nao ha clientes acima de 60 anos o suficiente na lista  !  |',
+    )
+    console.log(
+      ANSII_RED,
+      '---------------------------------------------------------------',
     )
   }
 }
 
 async function checkProductValue() {
-  const value = parseFloat(await printLine('Enter the product value: '))
+  const value = await validaNum(
+    parseFloat(await printLine('Insira o valor do produto 💵  :')),
+    'o valor',
+  )
 
   let found = false
   let index = 0
@@ -405,62 +618,180 @@ async function checkProductValue() {
     if (products[index].saleValue === value) {
       found = true
     }
-
     index++
   }
 
   if (found) {
-    console.log('Product with the specified value exists in the list.')
+    console.log(
+      ANSII_GREEN,
+      '\n----------------------------------------------------',
+    )
+    console.log(
+      ANSII_GREEN,
+      '|  Produto com esse valor encontrado na lista ✅!  |',
+    )
+    console.log(
+      ANSII_GREEN,
+      '----------------------------------------------------',
+    )
+    const product = products[index - 1]
+    console.log(`\n| Nome            | ${product.name}`)
+    console.log('---------------------------------------')
+    console.log(`| Descricao       | ${product.description}`)
+    console.log('---------------------------------------')
+    console.log(ANSII_RED, `| FabricaId       | ${product.manufacturerId}`)
+    console.log('---------------------------------------')
+    console.log(`| Profit          | ${product.profit}`)
+    console.log('---------------------------------------')
+    console.log(`| Profit em %     | ${product.profitPercentage}`)
+    console.log('---------------------------------------')
+    console.log(`| Valor de Compra | ${product.purchaseValue}`)
+    console.log('---------------------------------------')
+    console.log(`| Valor de Venda  | ${product.saleValue}`)
+    console.log('---------------------------------------')
+    console.log(`| Peso       | ${product.weight}`)
+    console.log('---------------------------------------')
   } else {
-    console.log('No product with the specified value found in the list.')
+    console.log(
+      ANSII_RED,
+      '\n---------------------------------------------------',
+    )
+    console.log(
+      ANSII_RED,
+      '|   Nenhum produto encontrado com esse valor  !   |',
+    )
+    console.log(
+      ANSII_RED,
+      '---------------------------------------------------',
+    )
   }
 }
 
 async function serveCustomersByQueue() {
   if (customers.length > 0) {
     const customer = customers.shift()
-    console.log(`Serving customer: ${customer?.name}`)
+    console.log('\n---------------------------------------')
+    console.log(`Servindo o cliente: ${customer?.name}`)
+    console.log('---------------------------------------')
   } else {
-    console.log('No customers in the list.')
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de clientes Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
   }
 }
 
 async function serveCustomersByStack() {
   if (customers.length > 0) {
     const customer = customers.pop()
-    console.log(`Serving customer: ${customer?.name}`)
+    console.log('\n---------------------------------------')
+    console.log(`Servindo o cliente: ${customer?.name}`)
+    console.log('---------------------------------------')
   } else {
-    console.log('No customers in the list.')
+    console.log(ANSII_RED, '\n---------------------------------------')
+    console.log(ANSII_RED, '|     Lista de clientes Vazia  !      |')
+    console.log(ANSII_RED, '---------------------------------------')
   }
 }
 
 async function displaySubMenu() {
-  console.log('--- MENU ---')
-  console.log('[a] Listar produtos por fabricante')
   console.log(
-    '[b] Encontrar estado(s) onde há um produto com valor igual ao maior valor do sistema',
+    '\n||                                          SUB MENU 📋                                       ||',
   )
   console.log(
-    '[c] Encontrar fabricante(s) onde há um produto com valor igual ao menor valor do sistema',
+    '--------------------------------------------------------------------------------------------------',
   )
-  console.log('[d] Listar todos os produtos em ordem crescente de valor')
-  console.log('[e] Listar todos os produtos em ordem crescente de lucro')
-  console.log('[f] Registrar um novo cliente na lista')
-  console.log('[g] Verificar se há algum cliente na lista com mais de 60 anos')
   console.log(
-    '[h] Verificar se há algum produto com o valor especificado pelo usuário',
+    '   [A]     | Listar produtos por fabricante                                                      |',
   )
-  console.log('[i] Atender clientes com base em uma fila')
-  console.log('[j] Atender clientes com base em uma pilha')
-  console.log('[s] Sair')
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [B]     | Encontrar estado(s) onde há um produto com valor igual ao maior valor do sistema    |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [C]     | Encontrar fabricante(s) onde há um produto com valor igual ao menor valor do sistema|',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [D]     | Listar todos os produtos em ordem crescente de valor                                |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [E]     | Listar todos os produtos em ordem crescente de lucro                                |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [F]     | Registrar um novo cliente na lista                                                  |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [G]     | Listar todos clientes cadastrados                                                   |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [H]     | Verificar se há algum cliente na lista com mais de 60 anos                          |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [I]     | Verificar se há algum produto com o valor especificado pelo usuário                 |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [J]     | Atender clientes com base em uma fila                                               |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [K]     | Atender clientes com base em uma pilha                                              |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
+  console.log(
+    '   [S]     | Retornar ao menu principal                                                          |',
+  )
+  console.log(
+    '--------------------------------------------------------------------------------------------------',
+  )
 }
 async function displayMenu(): Promise<void> {
-  console.log('--- MENU ---')
-  console.log('[1] Register a product')
-  console.log('[2] Register a manufacturer')
-  console.log('[3] Register a UF')
-  console.log('[4] Ir para o Sub Menu')
-  console.log('[5] Quit')
+  console.log('\n||               MAIN MENU                ||')
+  console.log('--------------------------------------------')
+  console.log('|  [1]     | Registrar um produto 🛒       |')
+  console.log('--------------------------------------------')
+  console.log('|  [2]     | Registrar uma fabrica🏛️        |')
+  console.log('--------------------------------------------')
+  console.log('|  [3]     | Registrar uma UF 🗺️            |')
+  console.log('--------------------------------------------')
+  console.log('|  [4]     | Listar Todos Produtos 🛒      |')
+  console.log('--------------------------------------------')
+  console.log('|  [5]     | Listar Todas as Fabricas🏛️     |')
+  console.log('--------------------------------------------')
+  console.log('|  [6]     | Listar Todas UFs 🗺️            |')
+  console.log('--------------------------------------------')
+  console.log('|  [7]     | Ir para SUBMENU               |')
+  console.log('--------------------------------------------')
+  console.log('|  [8]     | Sair do programa              |')
+  console.log('--------------------------------------------')
 }
 
 async function subMenuCase() {
@@ -468,7 +799,10 @@ async function subMenuCase() {
 
   while (exitSubMenu) {
     displaySubMenu()
-    const option = await printLine('Enter the desired option: ')
+    const option = await validaStr(
+      await printLine('Insira sua Opcao: '),
+      'a Opcao',
+    )
 
     switch (option.toLowerCase().trim()) {
       case 'a':
@@ -490,18 +824,49 @@ async function subMenuCase() {
         await registerCustomer()
         break
       case 'g':
-        await checkSeniorCustomers()
+        console.log('|  Quais Clientes deseja listar   |')
+        console.log('-----------------------------------')
+        console.log('|  [01]     | ACIMA de 60 anos    |')
+        console.log('-----------------------------------')
+        console.log('|  [02]     | ABAIXO de 60 anos   |')
+        console.log('-----------------------------------')
+        console.log('|  [03]     | Retornar ao subMenu |')
+        console.log('-----------------------------------')
+        // eslint-disable-next-line no-case-declarations
+        const choiceCustomer = await validaNum(
+          await printLine('Insira sua Opcao: '),
+          'a Opcao',
+        )
+        switch (choiceCustomer) {
+          case 1:
+            listCustomers()
+            break
+          case 2:
+            listSeniorCustomers()
+            break
+          default:
+            console.log('OPCAO INVALIDA')
+
+            break
+        }
+
         break
       case 'h':
-        await checkProductValue()
+        await checkSeniorCustomers()
         break
       case 'i':
-        await serveCustomersByQueue()
+        await checkProductValue()
         break
       case 'j':
+        await serveCustomersByQueue()
+        break
+      case 'k':
         await serveCustomersByStack()
         break
       case 's':
+        console.log('\n--------------------------------------------')
+        console.log('|     Retornando ao menu principal         |')
+        console.log('--------------------------------------------')
         exitSubMenu = false
         break
       default:
@@ -514,8 +879,11 @@ async function main(): Promise<void> {
   let exitMain = true
   while (exitMain) {
     displayMenu()
-    const choice = await printLine('Enter your choice:')
-    switch (choice) {
+    const choice = await validaNum(
+      await printLine('Insira sua Opcao: '),
+      'a Opcao',
+    )
+    switch (String(choice)) {
       case '1':
         await registerProduct()
         break
@@ -526,10 +894,30 @@ async function main(): Promise<void> {
         await registerUF()
         break
       case '4':
-        await subMenuCase()
+        listProducts()
         break
       case '5':
-        console.log('Quitting...')
+        listManufacturers()
+        break
+      case '6':
+        listUfs()
+        break
+      case '7':
+        await subMenuCase()
+        break
+      case '8':
+        console.log(
+          ANSII_GREEN,
+          '\n-----------------------------------------------------------',
+        )
+        console.log(
+          ANSII_GREEN,
+          '|  Saindo.. Obrigado por utilizar um dos nossos programas  |',
+        )
+        console.log(
+          ANSII_GREEN,
+          '-----------------------------------------------------------',
+        )
         exitMain = false
         process.exit(0)
         break
@@ -537,7 +925,6 @@ async function main(): Promise<void> {
         console.log('Invalid choice. Please try again.')
         break
     }
-    console.log('-------------------------')
   }
 }
 main()
