@@ -1,5 +1,8 @@
 import readline from 'readline'
 
+// Aluno: Gabriel Matias
+// BCC - UCB
+
 interface Product {
   name: string
   description: string
@@ -62,7 +65,7 @@ async function validaNum(input: string | number, inputName: string) {
   return Number(input)
 }
 async function validaStr(input: string | number, inputName: string) {
-  const onlyLetters = /^[A-Za-z]+$/
+  const onlyLetters = /^[A-Za-z,. ]+$/
 
   while (!onlyLetters.test(String(input))) {
     console.log(ANSII_RED, '------------------------------')
@@ -404,19 +407,17 @@ function listCustomers() {
 }
 
 async function listProductsByManufacturer() {
-  const manufacturerCode = validaNum(
+  const manufacturerCode = await validaNum(
     await printLine('Insira o codigo da Fabrica: '),
     'o codigo da fabrica',
   )
+  console.log(manufacturerCode)
 
   const filteredProducts = products.filter(
     (product) => product.manufacturerId === Number(manufacturerCode),
   )
 
-  const sortedProducts = filteredProducts.sort((a, b) =>
-    a.name.localeCompare(b.name),
-  )
-  if (!sortedProducts) {
+  if (!filteredProducts) {
     console.log(
       ANSII_RED,
       '\n---------------------------------------------------------------------------------------------',
@@ -430,7 +431,7 @@ async function listProductsByManufacturer() {
       '---------------------------------------------------------------------------------------------',
     )
   } else {
-    sortedProducts.forEach((product) => {
+    filteredProducts.forEach((product) => {
       console.log(ANSII_GREEN, '\n---------------------------------------')
       console.log(ANSII_GREEN, '|        Produto Encontrado!!         |')
       console.log(ANSII_GREEN, '---------------------------------------')
